@@ -16,6 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using ParkyAPI.ParkyMapper;
+using ParkyAPI.Repository;
 
 namespace ParkyAPI
 {
@@ -37,7 +38,7 @@ namespace ParkyAPI
             (
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefultConnection"))
             );
-            services.AddScoped<INationalParkRepository, INationalParkRepository>();
+            services.AddScoped<INationalParkRepository, NationalParkRepository>();
             services.AddAutoMapper(typeof(ParkyMappings));
             services.AddSwaggerGen(c =>
             {

@@ -5,19 +5,19 @@ namespace ParkyAPI.Repository.IRepository
 {
     public interface INationalParkRepository
     {
-        ICollection<NationalParkDto> GetNationalParks();
+        ICollection<NationalPark> GetNationalParks();
 
-        NationalParkDto GetNationalPark(int nationalParkId);
+        NationalPark GetNationalPark(int nationalParkId);
 
         bool NationalParkExists(string name);
 
         bool NationalParkExists(int nationalParkId);
 
-        bool CreateNationalPark(NationalParkDto nationalPark);
+        bool CreateNationalPark(NationalPark nationalPark);
 
-        bool UpdateNationalPark(NationalParkDto nationalPark);
+        bool UpdateNationalPark(NationalPark nationalPark);
 
-        bool DeleteNationalPark(NationalParkDto nationalPark);
+        bool DeleteNationalPark(NationalPark nationalPark);
 
         bool Save();
     }
