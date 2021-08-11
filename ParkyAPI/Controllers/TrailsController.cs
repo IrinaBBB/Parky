@@ -11,116 +11,143 @@ namespace ParkyAPI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public class NationalParksController : ControllerBase
+    public class TrailsController : Controller
     {
-        private readonly INationalParkRepository _repo;
+        private readonly ITrailRepository _repo;
         private readonly IMapper _mapper;
 
-        public NationalParksController(INationalParkRepository repo, IMapper mapper)
+        public TrailsController(ITrailRepository repo, IMapper mapper)
         {
             _repo = repo;
             _mapper = mapper;
         }
 
         /// <summary>
-        /// Gets list of national parks
+        /// Gets list of trails
         /// </summary>
-        /// <returns>list of national parks</returns>
+        /// <returns>list of trails</returns>
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(List<NationalParkDto>))]
+        [ProducesResponseType(200, Type = typeof(List<TrailDto>))]
         [ProducesDefaultResponseType]
-        public IActionResult GetNationalParks()
+        public IActionResult GetTrails()
         {
-            var objList = _repo.GetNationalParks();
-            var objDto = new List<NationalParkDto>();
+            var objList = _repo.GetTrails();
+            var objDto = new List<TrailDto>();
 
             foreach (var obj in objList)
             {
-                objDto.Add(_mapper.Map<NationalParkDto>(obj));
+                objDto.Add(_mapper.Map<TrailDto>(obj));
             }
 
             return Ok(objDto);
         }
 
         /// <summary>
-        /// Gets individual national park
+        /// Gets an individual trail
         /// </summary>
-        /// <param name="id">The id of the national park</param>
+        /// <param name="id">The id of the trail</param>
         /// <returns></returns>
-        [HttpGet("{id:int}", Name = "GetNationalPark")]
-        [ProducesResponseType(200, Type = typeof(NationalParkDto))]
+        [HttpGet("{id:int}", Name = "GetTrail")]
+        [ProducesResponseType(200, Type = typeof(TrailDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
-        public IActionResult GetNationalPark(int id)
+        public IActionResult GetTrail(int id)
         {
-            var obj = _repo.GetNationalPark(id);
+            var obj = _repo.GetTrail(id);
             if (obj == null)
             {
                 return NotFound();
             }
 
-            var objDto = _mapper.Map<NationalParkDto>(obj);
+            var objDto = _mapper.Map<TrailDto>(obj);
 
             return Ok(objDto);
         }
 
         /// <summary>
-        /// Creates an individual park
+        /// Gets trails by park id
+        /// </summary>
+        /// <param name="id">The id of the park</param>
+        /// <returns></returns>
+        [HttpGet("GetTrailsInNationalPark/{id:int}", Name = "GetTrailsByParkId")]
+        [ProducesResponseType(200, Type = typeof(List<TrailDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesDefaultResponseType]
+        public IActionResult GetTrailsInNationalPark(int id)
+        {
+            var objList = _repo.GetTrailsInNationalPark(id);
+            if (objList == null)
+            {
+                return NotFound();
+            }
+
+            var objListDto = new List<TrailDto>();
+            foreach (var obj in objList)
+            {
+                objListDto.Add(_mapper.Map<TrailDto>(obj));
+            }
+
+            return Ok(objListDto);
+        }
+
+        /// <summary>
+        /// Creates an individual trail
         /// </summary>
         /// <param name="objDto"></param>
         /// <returns></returns>
         [HttpPost]
-        [ProducesResponseType(201, Type = typeof(NationalParkDto))]
+        [ProducesResponseType(201, Type = typeof(TrailDto))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
-        public IActionResult CreateNationalPark(NationalParkDto objDto)
+        public IActionResult CreateTrail(TrailCreateDto objDto)
         {
             if (objDto == null)
             {
                 return BadRequest(ModelState);
             }
 
-            if(_repo.NationalParkExists(objDto.Name))
+            if (_repo.TrailExists(objDto.Name))
             {
-                ModelState.AddModelError("", "National Park Exists!");
+                ModelState.AddModelError("", "Trail Exists!");
                 return StatusCode(404, ModelState);
             }
 
-            var obj = _mapper.Map<NationalPark>(objDto);
+            var obj = _mapper.Map<Trail>(objDto);
 
-            if (!_repo.CreateNationalPark(obj))
+            if (!_repo.CreateTrail(obj))
             {
                 ModelState.AddModelError("", $"Something went wrong when saving the record {obj.Name}");
                 return StatusCode(500, ModelState);
             }
 
-            return CreatedAtRoute("GetNationalPark", new { id = obj.Id }, obj);
+            return CreatedAtRoute("GetTrail", new { id = obj.Id }, obj);
         }
 
         /// <summary>
-        /// Updates an individual park 
+        /// Updates an individual trail 
         /// </summary>
         /// <param name="id"></param>
         /// <param name="objDto"></param>
         /// <returns></returns>
-        [HttpPatch("{id:int}", Name = "UpdateNationalPark")]
+        [HttpPatch("{id:int}", Name = "UpdateTrail")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
-        public IActionResult UpdateNationalPark(int id, NationalParkDto objDto)
+        public IActionResult UpdateTrail(int id, TrailUpdateDto objDto)
         {
             if (objDto == null || id != objDto.Id)
             {
                 return BadRequest(ModelState);
             }
 
-            var obj = _mapper.Map<NationalPark>(objDto);
+            var obj = _mapper.Map<Trail>(objDto);
 
-            if (!_repo.UpdateNationalPark(obj))
+            if (!_repo.UpdateTrail(obj))
             {
                 ModelState.AddModelError("", $"Something went wrong when updating the record {obj.Name}");
                 return StatusCode(500, ModelState);
@@ -130,26 +157,26 @@ namespace ParkyAPI.Controllers
         }
 
         /// <summary>
-        /// Deletes an individual park 
+        /// Deletes an individual trail 
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{id:int}", Name = "DeleteNationalPark")]
+        [HttpDelete("{id:int}", Name = "DeleteTrail")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
-        public IActionResult UpdateNationalPark(int id)
+        public IActionResult UpdateTrail(int id)
         {
-            if (!_repo.NationalParkExists(id))
+            if (!_repo.TrailExists(id))
             {
                 return NotFound();
             }
 
-            var obj = _repo.GetNationalPark(id);
+            var obj = _repo.GetTrail(id);
 
-            if (!_repo.DeleteNationalPark(obj))
+            if (!_repo.DeleteTrail(obj))
             {
                 ModelState.AddModelError("", $"Something went wrong when deleting the record {obj.Name}");
                 return StatusCode(500, ModelState);
@@ -157,5 +184,6 @@ namespace ParkyAPI.Controllers
 
             return NoContent();
         }
+
     }
 }

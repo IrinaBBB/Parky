@@ -1,22 +1,17 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using ParkyAPI.Data;
 using ParkyAPI.Repository.IRepository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
 using ParkyAPI.ParkyMapper;
 using ParkyAPI.Repository;
+using System.Reflection;
+using System.IO;
+using System;
 
 namespace ParkyAPI
 {
@@ -39,10 +34,31 @@ namespace ParkyAPI
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefultConnection"))
             );
             services.AddScoped<INationalParkRepository, NationalParkRepository>();
+            services.AddScoped<ITrailRepository, TrailRepository>();
+
             services.AddAutoMapper(typeof(ParkyMappings));
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ParkyAPI", Version = "v1" });
+                c.SwaggerDoc("ParkyOpenAPISpec", new OpenApiInfo 
+                { 
+                    Title = "ParkyAPI", 
+                    Version = "v1",
+                    Description = "Udemy Parky API",
+                    Contact = new OpenApiContact
+                    {
+                        Email = "parky@mail.com",
+                        Name = "Irina",
+                        Url = new Uri("https://aurorahost.ru")
+                    }, 
+                    License = new OpenApiLicense
+                    {
+                        Name = "MIT Licence",
+                        Url = new Uri("https://en.wikipedia.org/wiki/MIT_Licence")
+                    }
+                });
+                var xmlCommentFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var cmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentFile);
+                c.IncludeXmlComments(cmlCommentsFullPath);
             });
         }
 
@@ -53,7 +69,11 @@ namespace ParkyAPI
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ParkyAPI v1"));
+                app.UseSwaggerUI(
+                    c => {
+                        c.SwaggerEndpoint("/swagger/ParkyOpenAPISpec/swagger.json", "Parky API");
+                        c.RoutePrefix = "";
+                    });
             }
 
             app.UseHttpsRedirection();
