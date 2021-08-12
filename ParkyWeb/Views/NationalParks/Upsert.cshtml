@@ -68,7 +68,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-4 text-right" style="width:250px;">
+        <div class="col-4 text-right">
             @if (Model.Picture != null)
             {
                 @if (Model.Picture.Length > 0)
@@ -79,16 +79,14 @@
                 }
                 else
                 {
-                    <img src="~/img/forest.png" width="100%" />
+                    <img src="~/img/forest.png" width="80%" />
                 }
             }
             else
             {
 
-                <img src="~/img/forest.png" width="100%" />
+                <img src="~/img/forest.png" width="80%" />
             }
-            }
-
         </div>
     </div>
 </form>
