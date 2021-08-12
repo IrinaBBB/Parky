@@ -12,10 +12,16 @@ namespace ParkyWeb.Models
         [Required]
         public double Distance { get; set; }
 
+        [Required]
+        public double Elevation { get; set; }
+
+        public DifficultyType Difficulty { get; set; }
+
         public enum DifficultyType { Easy, Moderate, Expert }
 
         [Required]
         public int NationalParkId { get; set; }
+
 
         public NationalPark NationalPark { get; set; }
     }

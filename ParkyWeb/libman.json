@@ -4,27 +4,31 @@
   "libraries": [
     {
       "library": "font-awesome@5.15.4",
-      "destination": "wwwroot/font-awesome/"
+      "destination": "wwwroot/lib/font-awesome/"
     },
     {
       "library": "datepicker@1.0.10",
-      "destination": "wwwroot/datepicker/"
+      "destination": "wwwroot/lib/datepicker/"
     },
     {
       "library": "sweetalert@2.1.2",
-      "destination": "wwwroot/sweetalert/"
+      "destination": "wwwroot/lib/sweetalert/"
     },
     {
       "library": "datatables@1.10.21",
-      "destination": "wwwroot/datatables/"
+      "destination": "wwwroot/lib/datatables/"
     },
     {
       "library": "jqueryui@1.12.1",
-      "destination": "wwwroot/jqueryui/"
+      "destination": "wwwroot/lib/jqueryui/"
     },
     {
       "library": "toastr.js@2.1.4",
-      "destination": "wwwroot/toastr.js/"
+      "destination": "wwwroot/lib/toastr.js/"
+    },
+    {
+      "library": "bootswatch@5.1.0",
+      "destination": "wwwroot/lib/bootswatch/"
     }
   ]
 }
