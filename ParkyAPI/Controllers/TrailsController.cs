@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ParkyAPI.Models;
@@ -48,6 +49,8 @@ namespace ParkyAPI.Controllers
         /// <param name="id">The id of the trail</param>
         /// <returns></returns>
         [HttpGet("{id:int}", Name = "GetTrail")]
+        //[Authorize(Policy = "RequireAdmin")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(200, Type = typeof(TrailDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

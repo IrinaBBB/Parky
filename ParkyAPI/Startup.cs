@@ -12,6 +12,9 @@ using ParkyAPI.Repository;
 using System.Reflection;
 using System.IO;
 using System;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ParkyAPI
 {
@@ -29,12 +32,14 @@ namespace ParkyAPI
         {
 
             services.AddControllers();
+            services.AddCors();
             services.AddDbContext<ApplicationDbContext>
             (
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefultConnection"))
             );
             services.AddScoped<INationalParkRepository, NationalParkRepository>();
             services.AddScoped<ITrailRepository, TrailRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddAutoMapper(typeof(ParkyMappings));
             services.AddSwaggerGen(c =>
@@ -60,6 +65,32 @@ namespace ParkyAPI
                 var cmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentFile);
                 c.IncludeXmlComments(cmlCommentsFullPath);
             });
+
+
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+
+            services.Configure<AppSettings>(appSettingsSection);
+
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x => {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -80,6 +111,12 @@ namespace ParkyAPI
 
             app.UseRouting();
 
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+            
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
