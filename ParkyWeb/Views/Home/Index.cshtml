@@ -23,7 +23,7 @@
                                             <h3 style="color:#bbb9b9">Established: @nationalPark.Established.Year</h3>
                                         </div>
                                         <div class="col-12">
-                                            @if (Model.TrailList.Where(u => u.NationalParkId == nationalPark.Id).Count() > 0)
+                                            @if (Model.TrailList?.Where(u => u.NationalParkId == nationalPark.Id).Count() > 0)
                                             {
                                             <table class="table table-striped" style="border:1px solid #808080 ">
                                                 <tr class="table-secondary">
@@ -34,7 +34,6 @@
                                                     <th>Elevation Gain</th>
                                                     <th>Difficulty</th>
                                                 </tr>
-
                                                 @foreach(var trail in Model.TrailList.Where(u => u.NationalParkId == nationalPark.Id))
                                                 {
                                                     <tr>
@@ -44,7 +43,6 @@
                                                         <td>@trail.Difficulty</td>
                                                     </tr>
                                                 }
-
                                             </table>
                                             } else
                                             {
